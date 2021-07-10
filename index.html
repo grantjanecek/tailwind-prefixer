@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Tailwind Prefixer</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;600;800&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@ryangjchandler/alpine-clipboard@2.x.x/dist/alpine-clipboard.js" defer></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+
+  </head>
+  <body>
+    <div class="min-h-screen container mx-auto px-10 flex flex-col justify-between">
+      <div class="flex justify-center pt-10 text-3xl md:text-5xl lg:text-6xl text-gray-800 font-extrabold">
+        <span>Prefix TailwindCSS HTML</span>
+      </div>
+      <div class="flex justify-center text-lg text-gray-600">
+        <span>Perfect for transforming TailwindUI Components.</span>
+      </div>
+      <div x-data="page()" class="mt-10 lg:mt-2 lg:flex lg:justify-center space-y-5 lg:space-y-0 lg:space-x-5">
+        <div class="flex-1">
+          <label>Plane Jane HTML</label>
+          <textarea
+            x-model="vanillaCode"
+            id="code"
+            name="code"
+            rows="20"
+            class="mt-1 shadow-sm block w-full focus:ring-gray-500 focus:border-gray-500 sm:text-sm border-1 border-gray-300 rounded-md"
+          ></textarea>
+        </div>
+        <div class="flex lg:flex-col justify-center items-end lg:items-center space-x-2 lg:space-x-0 lg:space-y-4 mt-4">
+          <div>
+            <label for="prefix" class="block text-sm font-medium text-gray-700">Prefix</label>
+            <div class="mt-1">
+              <input x-model="prefix" type="text" name="prefix" id="prefix" class="shadow-sm focus:ring-gray-500 focus:border-gray-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="tw" />
+            </div>
+          </div>
+          <button x-on:click="prefixCode" type="button" class="lg:w-full inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-gray-100 bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700">
+            Prefix
+          </button>
+          <button x-on:click="clearCode" type="button" class="lg:w-full inline-flex justify-center items-center px-6 py-3 border border-gray-300 shadow-sm text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            Clear
+          </button>
+        </div>
+        <div class="flex-1">
+          <div class="flex justify-between">
+            <label>Prefixed HTML</label>
+            <div class="flex items-center space-x-1 text-gray-500">
+              <span class="inline" x-show="copied">Copied</span>
+              <button @click="copyCode">
+                <svg x-bind:class="copied ? 'transform -rotate-6 scale-110' : ''" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M7.03 2.6a3 3 0 0 1 5.94 0L15 3v1h1a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h1V3l2.03-.4zM5 6H4v12h12V6h-1v1H5V6zm5-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+              </button>
+            </div>
+          </div>
+          <textarea
+            x-model="prefixedCode"
+            disabled
+            id="prefixedCode"
+            name="prefixedCode"
+            rows="20"
+            class="mt-1 shadow-sm block w-full sm:text-sm border-1 border-gray-300 rounded-md"
+          ></textarea>
+        </div>
+      </div>
+      <div class="flex justify-center py-10 text-sm sm:text-base">
+        <span>Made with <a href="https://vitejs.dev/">Vite</a>, <a href="https://tailwindcss.com/">TailwindCSS</a> and <a href="https://alpinejs.dev/">Alpine.js</a> by <a href="https://grantjanecek.dev">Grant Janecek</a></span>
+      </div>
+    </div>
+    <script type="module" src="/main.js"></script>
+    <script>
+      function page(){
+        return {
+          vanillaCode: '',
+          prefixedCode: '',
+          prefix: 'tw',
+          copied: false,
+          prefixCode(){
+            pagaData = this;
+
+            this.prefixedCode = this.vanillaCode.replaceAll(/([class|className|enter|enterFrom|enterTo|leave|leaveFrom|leaveTo])="([\w\s-\:\.]*)"/g, function(e, attrString, classString) {
+              return `${attrString}="${classString.split(' ').map(item => pagaData.prefix+'-'+item).join(' ')}"`
+            })
+          },
+          clearCode(){
+            this.vanillaCode= ''
+            this.prefixedCode = ''
+          },
+          copyCode(){
+            pageData = this;
+            this.copied = true
+            setTimeout(function(){ pageData.copied = false; }, 1500);
+
+            this.$clipboard(this.prefixedCode)
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
