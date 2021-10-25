@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/alpinejs" defer></script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T8JDSPT9C4"></script>    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T8JDSPT9C4"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -28,7 +28,7 @@
         <span>Prefix TailwindCSS HTML</span>
       </div>
       <div class="flex justify-center text-lg text-gray-600">
-        <span>Perfect for transforming TailwindUI Components.</span>
+        <span>Perfect for adding prefixes to TailwindUI Components.</span>
       </div>
       <div x-data="page()" class="mt-10 lg:mt-2 lg:flex lg:justify-center space-y-5 lg:space-y-0 lg:space-x-5">
         <div class="flex-1">
@@ -83,15 +83,22 @@
     <script>
       function page(){
         return {
-          vanillaCode: '',
+          vanillaCode: '<img class="w-auto sm:h-10 sm:hover:h-30">',
           prefixedCode: '',
           prefix: 'tw',
           copied: false,
           prefixCode(){
             pagaData = this;
 
-            this.prefixedCode = this.vanillaCode.replaceAll(/([class|className|enter|enterFrom|enterTo|leave|leaveFrom|leaveTo])="([\w\s-\:\.]*)"/g, function(e, attrString, classString) {
-              return `${attrString}="${classString.split(' ').map(item => pagaData.prefix+'-'+item).join(' ')}"`
+            this.prefixedCode = this.vanillaCode.replaceAll(/(class|className|enter|enterFrom|enterTo|leave|leaveFrom|leaveTo)="([\w\s\-\:\.]+)"/g, function(e, attrString, classString) {
+              return `${attrString}="${classString.split(' ').map(item => {
+                if(item.includes(':')){
+                  let n = item.lastIndexOf(":") + 1;
+                  return `${item.substring(0, n)}${pagaData.prefix}-${item.substring(n)}`
+                } else {
+                  return `${pagaData.prefix}-${item}`
+                }
+              }).join(' ')}"`
             })
           },
           clearCode(){
